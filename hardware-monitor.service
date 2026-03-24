@@ -1,0 +1,46 @@
+[Unit]
+Description=Hardware Temperature Monitor and Fan Control Service
+Documentation=man:hardware-monitor(1)
+After=network.target ipmi.service
+Wants=ipmi.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+
+# 环境变量
+Environment="CONFIG_FILE=/etc/hardware-monitor/hardware-monitor.conf"
+
+# 执行命令
+ExecStart=/usr/local/bin/hardware_monitor --service
+ExecReload=/bin/kill -HUP $MAINPID
+
+# 重启策略
+Restart=on-failure
+RestartSec=5s
+
+# 资源限制
+LimitNOFILE=65536
+CPUQuota=10%
+MemoryMax=50M
+
+# 安全加固
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/log/hardware-monitor
+
+# 标准输出和错误输出
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=hardware-monitor
+
+# 优雅停止
+KillMode=process
+KillSignal=SIGTERM
+TimeoutStopSec=30s
+
+[Install]
+WantedBy=multi-user.target
