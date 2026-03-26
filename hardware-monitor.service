@@ -1,8 +1,8 @@
 [Unit]
 Description=Hardware Temperature Monitor and Fan Control Service
 Documentation=man:hardware-monitor(1)
-After=network.target ipmi.service
-Wants=ipmi.service
+Before=basic.target
+After=sysinit.target
 
 [Service]
 Type=simple
@@ -43,4 +43,4 @@ KillSignal=SIGTERM
 TimeoutStopSec=30s
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=basic.target
