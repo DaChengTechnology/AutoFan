@@ -1,8 +1,7 @@
 [Unit]
 Description=Hardware Temperature Monitor and Fan Control Service
 Documentation=man:hardware-monitor(1)
-Before=basic.target
-After=sysinit.target
+After=openipmi.service.target
 
 [Service]
 Type=simple
