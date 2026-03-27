@@ -1,45 +1,33 @@
 [Unit]
-Description=Hardware Temperature Monitor and Fan Control Service
-Documentation=man:hardware-monitor(1)
-After=openipmi.service.target
+Description=Hardware Temperature Monitor and Fan Control
+Documentation=man:hardware_monitor(1)
+# 确保在基本系统启动后立即运行
+After=basic.target
+Before=multi-user.target
+# 确保IPMI模块已加载
+Wants=ipmi.service
+After=ipmi.service
 
 [Service]
 Type=simple
+# 使用root权限运行(需要IPMI权限)
 User=root
 Group=root
-
-# 环境变量
-Environment="CONFIG_FILE=/etc/hardware-monitor/hardware-monitor.conf"
-
-# 执行命令
+# 启动命令 - 使用--service参数启动服务模式
 ExecStart=/usr/local/bin/hardware_monitor --service
-ExecReload=/bin/kill -HUP $MAINPID
-
 # 重启策略
 Restart=on-failure
 RestartSec=5s
-
-# 资源限制
-LimitNOFILE=65536
-CPUQuota=10%
-MemoryMax=50M
-
-# 安全加固
-NoNewPrivileges=true
-PrivateTmp=true
-ProtectSystem=strict
-ProtectHome=true
-ReadWritePaths=/var/log/hardware-monitor
-
-# 标准输出和错误输出
-StandardOutput=journal
-StandardError=journal
-SyslogIdentifier=hardware-monitor
-
-# 优雅停止
+# 优雅退出
 KillMode=process
 KillSignal=SIGTERM
 TimeoutStopSec=30s
+# 标准输出和错误输出
+StandardOutput=journal
+StandardError=journal
+# 环境变量(可选)
+Environment="CONFIG_FILE=/etc/hardware-monitor/hardware-monitor.conf"
 
 [Install]
-WantedBy=basic.target
+# 在系统启动时自动启动
+WantedBy=multi-user.target

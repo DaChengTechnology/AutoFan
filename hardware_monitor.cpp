@@ -717,13 +717,25 @@ int main(int argc, char* argv[]) {
     // 尝试加载配置文件
     const char* configFileEnv = std::getenv("CONFIG_FILE");
     std::string configPath = configFileEnv ? configFileEnv : "/etc/hardware-monitor/hardware-monitor.conf";
-    
+
     if (fs::exists(configPath)) {
         if (loadConfig(configPath)) {
             std::cerr << "已加载配置文件: " << configPath << std::endl;
         }
     }
-    
+
+    // 早期启动:立即设置风扇为手动模式并应用初始转速
+    // 这确保在系统启动早期就控制风扇,避免过热
+    if (g_config.enableIPMI) {
+        std::cerr << "早期启动:设置风扇为手动模式..." << std::endl;
+        setIPMIFanMode(FanMode::Manual);
+
+        // 设置初始风扇转速(使用配置的最小转速或中等转速)
+        int initialSpeed = g_config.fanSpeedMedium;  // 使用中等转速作为启动转速
+        std::cerr << "早期启动:设置初始风扇转速为 " << initialSpeed << "%" << std::endl;
+        setIPMIFanSpeed(initialSpeed);
+    }
+
     if (argc == 1) {
         // 默认显示所有信息
         printAllTemperatures();
