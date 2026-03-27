@@ -552,7 +552,7 @@ int autoFanControl(bool verbose = true) {
     
     // 如果有GPU温度，也考虑进去
     if (gpuTemp.valid && gpuTemp.celsius >= g_config.gpuTempHigh) {
-        fanSpeed = std::max(fanSpeed, g_config.fanSpeedHigh);
+        fanSpeed = std::max(fanSpeed, g_config.fanSpeedMedium);
     }
     
     // 如果有内存温度，也考虑进去
